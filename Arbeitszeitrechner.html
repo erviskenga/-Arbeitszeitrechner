@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#3498db">
+    <title>Arbeitszeitrechner</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
+            margin: 0 auto;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        .app-container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: linear-gradient(135deg, #3498db, #2c3e50);
+            border-radius: 15px;
+            color: white;
+            box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
+        }
+        
+        h1 {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            font-size: 1rem;
+            opacity: 0.9;
+        }
+        
+        .warning-box {
+            background-color: #fff3cd;
+            border: 2px solid #ffeaa7;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 25px;
+            color: #856404;
+        }
+        
+        .warning-box h3 {
+            margin-top: 0;
+            color: #d35400;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .instructions {
+            background-color: #e8f4fc;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 30px;
+            border-left: 4px solid #3498db;
+        }
+        
+        .instructions h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .step {
+            margin-bottom: 15px;
+            padding: 10px;
+            background: white;
+            border-radius: 8px;
+            border-left: 3px solid #3498db;
+        }
+        
+        .step-number {
+            display: inline-block;
+            width: 25px;
+            height: 25px;
+            background-color: #3498db;
+            color: white;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 25px;
+            margin-right: 10px;
+            font-weight: bold;
+        }
+        
+        /* Stilet e formës (të njëjta si më parë) */
+        .input-group {
+            margin-bottom: 25px;
+        }
+        
+        .input-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #2c3e50;
+            font-size: 1.05rem;
+        }
+        
+        .time-input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            transition: border-color 0.3s;
+        }
+        
+        .time-input:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+        
+        .button-group {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin: 30px 0;
+        }
+        
+        .btn {
+            padding: 16px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .calculate-btn {
+            background-color: #3498db;
+            color: white;
+        }
+        
+        .calculate-btn:active {
+            background-color: #2980b9;
+            transform: scale(0.98);
+        }
+        
+        .reset-btn {
+            background-color: #ecf0f1;
+            color: #7f8c8d;
+        }
+        
+        .reset-btn:active {
+            background-color: #d5dbdb;
+            transform: scale(0.98);
+        }
+        
+        .result-container {
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            padding: 25px;
+            margin-top: 20px;
+            display: none;
+            border: 2px solid #27ae60;
+        }
+        
+        .result-title {
+            font-size: 1.3rem;
+            color: #2c3e50;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        
+        .result {
+            text-align: center;
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: #27ae60;
+            margin: 10px 0;
+        }
+        
+        .breakdown {
+            margin-top: 20px;
+            font-size: 1rem;
+            color: #7f8c8d;
+        }
+        
+        .error-message {
+            color: #e74c3c;
+            margin-top: 10px;
+            font-weight: 600;
+            display: none;
+            padding: 10px;
+            background-color: #ffeaea;
+            border-radius: 5px;
+            border: 1px solid #ffcccc;
+        }
+        
+        .history {
+            margin-top: 30px;
+            border-top: 1px solid #eee;
+            padding-top: 20px;
+        }
+        
+        .history-title {
+            font-size: 1.2rem;
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+        
+        .history-item {
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .history-date {
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        
+        .history-hours {
+            color: #27ae60;
+            font-weight: 600;
+        }
+        
+        .clear-history-btn {
+            background-color: #e74c3c;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            margin-top: 10px;
+            width: 100%;
+        }
+        
+        .clear-history-btn:active {
+            background-color: #c0392b;
+            transform: scale(0.98);
+        }
+        
+        .quick-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .quick-action-btn {
+            flex: 1;
+            padding: 12px;
+            background-color: #f8f9fa;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            min-width: 120px;
+        }
+        
+        .quick-action-btn:active {
+            background-color: #e9ecef;
+        }
+        
+        @media (max-width: 480px) {
+            body {
+                padding: 10px;
+            }
+            
+            h1 {
+                font-size: 1.6rem;
+            }
+            
+            .time-input, .btn {
+                padding: 14px;
+            }
+            
+            .result {
+                font-size: 1.9rem;
+            }
+            
+            .quick-actions {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <div class="header">
+            <h1>⏱️ Arbeitszeitrechner</h1>
+            <p class="subtitle">Berechnen Sie Ihre Arbeitszeit einfach und schnell</p>
+        </div>
+        
+        <div class="warning-box">
+            <h3>⚠️ Wichtig für iPhone Benutzer</h3>
+            <p>Diese Datei funktioniert besser, wenn Sie sie im Browser öffnen. So geht's:</p>
+            <ol style="margin-left: 20px; margin-top: 10px;">
+                <li>Speichern Sie diese Datei zuerst auf Ihrem iPhone</li>
+                <li>Öffnen Sie die <strong>Safari App</strong></li>
+                <li>Tippen Sie auf die Adressleiste und schreiben Sie: <code>file:///</code></li>
+                <li>Navigieren Sie zu Downloads und wählen Sie diese Datei aus</li>
+                <li>Oder noch besser: Besuchen Sie <a href="#" style="color: #3498db; text-decoration: underline;" id="online-link">die Online-Version</a></li>
+            </ol>
+        </div>
+        
+        <div class="instructions">
+            <h3>📱 Einfache Lösung</h3>
+            <div class="step">
+                <span class="step-number">1</span>
+                <strong>Besuchen Sie diese Website online:</strong>
+                <div style="margin-top: 10px; padding: 10px; background: white; border-radius: 5px;">
+                    <input type="text" id="url-display" value="https://your-domain.com/arbeitszeitrechner" readonly style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 5px; font-size: 0.9rem;">
+                    <button id="copy-url-btn" style="margin-top: 10px; padding: 8px 15px; background: #3498db; color: white; border: none; border-radius: 5px; width: 100%;">Link kopieren</button>
+                </div>
+            </div>
+            <div class="step">
+                <span class="step-number">2</span>
+                <strong>In Safari öffnen</strong> und auf "Teilen" (📤) tippen
+            </div>
+            <div class="step">
+                <span class="step-number">3</span>
+                <strong>"Zum Home-Bildschirm"</strong> wählen und hinzufügen
+            </div>
+        </div>
+        
+        <main>
+            <div class="input-group">
+                <label class="input-label" for="start-time">Arbeitsbeginn</label>
+                <input type="time" id="start-time" class="time-input" value="09:00">
+            </div>
+            
+            <div class="input-group">
+                <label class="input-label" for="end-time">Arbeitsende</label>
+                <input type="time" id="end-time" class="time-input" value="17:00">
+            </div>
+            
+            <div class="input-group">
+                <label class="input-label" for="break-time">Pausendauer (Stunden:Minuten)</label>
+                <input type="text" id="break-time" class="time-input" placeholder="z.B. 1:00 für 1 Stunde Pause" value="1:00">
+                <small style="color: #95a5a6; display: block; margin-top: 5px;">Format: Stunden:Minuten (z.B. 0:30 für 30 Minuten)</small>
+            </div>
+            
+            <div class="quick-actions">
+                <div class="quick-action-btn" data-start="06:00" data-end="14:00" data-break="0:30">
+                    6:00 - 14:00<br><small>0:30 Pause</small>
+                </div>
+                <div class="quick-action-btn" data-start="07:00" data-end="15:30" data-break="0:45">
+                    7:00 - 15:30<br><small>0:45 Pause</small>
+                </div>
+                <div class="quick-action-btn" data-start="08:00" data-end="17:00" data-break="1:00">
+                    8:00 - 17:00<br><small>1:00 Pause</small>
+                </div>
+            </div>
+            
+            <div class="error-message" id="error-message">
+                Bitte überprüfen Sie die eingegebenen Zeiten!
+            </div>
+            
+            <div class="button-group">
+                <button class="btn calculate-btn" id="calculate-btn">Arbeitszeit berechnen</button>
+                <button class="btn reset-btn" id="reset-btn">Eingaben löschen</button>
+            </div>
+            
+            <div class="result-container" id="result-container">
+                <h2 class="result-title">Gesamtarbeitszeit</h2>
+                <div class="result" id="total-hours">0:00</div>
+                <div class="breakdown" id="breakdown"></div>
+            </div>
+            
+            <div class="history" id="history-section">
+                <h3 class="history-title">Letzte Berechnungen</h3>
+                <div id="history-list"></div>
+                <button class="clear-history-btn" id="clear-history-btn">Verlauf löschen</button>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Krijo një link të rastësishëm për demonstrim
+            const demoUrls = [
+                "https://arbeitszeitrechner.app",
+                "https://arbeit-zeit-calculator.netlify.app",
+                "https://work-time-calculator.vercel.app",
+                "https://zeitberechner.github.io"
+            ];
+            const randomUrl = demoUrls[Math.floor(Math.random() * demoUrls.length)];
+            document.getElementById('url-display').value = randomUrl;
+            document.getElementById('online-link').href = randomUrl;
+            document.getElementById('online-link').textContent = randomUrl;
+            
+            // Kopjo linkun
+            document.getElementById('copy-url-btn').addEventListener('click', function() {
+                const urlInput = document.getElementById('url-display');
+                urlInput.select();
+                document.execCommand('copy');
+                this.textContent = '✓ Kopiert!';
+                setTimeout(() => {
+                    this.textContent = 'Link kopieren';
+                }, 2000);
+            });
+            
+            // DOM-Elemente
+            const startTimeInput = document.getElementById('start-time');
+            const endTimeInput = document.getElementById('end-time');
+            const breakTimeInput = document.getElementById('break-time');
+            const calculateBtn = document.getElementById('calculate-btn');
+            const resetBtn = document.getElementById('reset-btn');
+            const clearHistoryBtn = document.getElementById('clear-history-btn');
+            const errorMessage = document.getElementById('error-message');
+            const resultContainer = document.getElementById('result-container');
+            const totalHoursElement = document.getElementById('total-hours');
+            const breakdownElement = document.getElementById('breakdown');
+            const historyList = document.getElementById('history-list');
+            const historySection = document.getElementById('history-section');
+            
+            // Butonat e shpejtë
+            document.querySelectorAll('.quick-action-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const start = this.getAttribute('data-start');
+                    const end = this.getAttribute('data-end');
+                    const breakTime = this.getAttribute('data-break');
+                    
+                    startTimeInput.value = start;
+                    endTimeInput.value = end;
+                    breakTimeInput.value = breakTime;
+                    
+                    // Llogarit menjëherë
+                    calculateHours();
+                });
+            });
+            
+            // Aktuelle Zeiten als Standardwerte setzen
+            const now = new Date();
+            const currentHour = now.getHours().toString().padStart(2, '0');
+            const currentMinute = now.getMinutes().toString().padStart(2, '0');
+            
+            startTimeInput.value = `${currentHour}:${currentMinute}`;
+            
+            const endTime = new Date(now.getTime() + 8 * 60 * 60 * 1000);
+            const endHour = endTime.getHours().toString().padStart(2, '0');
+            const endMinute = endTime.getMinutes().toString().padStart(2, '0');
+            endTimeInput.value = `${endHour}:${endMinute}`;
+            
+            // Verlauf aus localStorage laden
+            loadHistory();
+            
+            // Event-Listener
+            calculateBtn.addEventListener('click', calculateHours);
+            resetBtn.addEventListener('click', resetForm);
+            clearHistoryBtn.addEventListener('click', clearHistory);
+            
+            startTimeInput.addEventListener('change', calculateHours);
+            endTimeInput.addEventListener('change', calculateHours);
+            breakTimeInput.addEventListener('change', calculateHours);
+            
+            // Funktion zur Berechnung der Arbeitszeit
+            function calculateHours() {
+                errorMessage.style.display = 'none';
+                
+                const startTime = startTimeInput.value;
+                const endTime = endTimeInput.value;
+                const breakTimeStr = breakTimeInput.value.trim();
+                
+                const startMinutes = timeToMinutes(startTime);
+                const endMinutes = timeToMinutes(endTime);
+                
+                if (startMinutes === null || endMinutes === null) {
+                    showError("Bitte geben Sie gültige Zeiten für Beginn und Ende ein.");
+                    return;
+                }
+                
+                if (endMinutes <= startMinutes) {
+                    showError("Die Endzeit muss nach der Startzeit liegen.");
+                    return;
+                }
+                
+                let breakMinutes = 0;
+                if (breakTimeStr) {
+                    breakMinutes = parseBreakTime(breakTimeStr);
+                    if (breakMinutes === null) {
+                        showError("Bitte geben Sie die Pausenzeit im korrekten Format ein (Stunden:Minuten).");
+                        return;
+                    }
+                }
+                
+                const totalMinutes = endMinutes - startMinutes - breakMinutes;
+                
+                if (totalMinutes <= 0) {
+                    showError("Die Arbeitszeit darf nicht Null oder negativ sein. Bitte überprüfen Sie die Pausenzeit.");
+                    return;
+                }
+                
+                const totalTime = minutesToTime(totalMinutes);
+                totalHoursElement.textContent = totalTime;
+                
+                const startTimeStr = minutesToTime(startMinutes);
+                const endTimeStr = minutesToTime(endMinutes);
+                const breakTimeStrFormatted = minutesToTime(breakMinutes);
+                
+                breakdownElement.innerHTML = `
+                    <p><strong>Beginn:</strong> ${startTimeStr}</p>
+                    <p><strong>Ende:</strong> ${endTimeStr}</p>
+                    <p><strong>Pause:</strong> ${breakTimeStrFormatted}</p>
+                    <p><strong>Gesamtarbeitszeit:</strong> ${totalTime}</p>
+                `;
+                
+                resultContainer.style.display = 'block';
+                saveToHistory(startTimeStr, endTimeStr, breakTimeStrFormatted, totalTime);
+            }
+            
+            function timeToMinutes(timeStr) {
+                if (!timeStr) return null;
+                const parts = timeStr.split(':');
+                if (parts.length !== 2) return null;
+                const hours = parseInt(parts[0]);
+                const minutes = parseInt(parts[1]);
+                if (isNaN(hours) || isNaN(minutes)) return null;
+                return hours * 60 + minutes;
+            }
+            
+            function minutesToTime(minutes) {
+                const hours = Math.floor(minutes / 60);
+                const mins = minutes % 60;
+                return `${hours.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}`;
+            }
+            
+            function parseBreakTime(breakStr) {
+                if (breakStr.includes(':')) {
+                    const parts = breakStr.split(':');
+                    if (parts.length === 2) {
+                        const hours = parseInt(parts[0]);
+                        const minutes = parseInt(parts[1]);
+                        if (!isNaN(hours) && !isNaN(minutes)) {
+                            return hours * 60 + minutes;
+                        }
+                    }
+                } else if (breakStr.includes('.')) {
+                    const decimalHours = parseFloat(breakStr);
+                    if (!isNaN(decimalHours)) {
+                        return Math.round(decimalHours * 60);
+                    }
+                } else {
+                    const num = parseInt(breakStr);
+                    if (!isNaN(num)) return num;
+                }
+                return null;
+            }
+            
+            function showError(message) {
+                errorMessage.textContent = message;
+                errorMessage.style.display = 'block';
+                resultContainer.style.display = 'none';
+            }
+            
+            function resetForm() {
+                const now = new Date();
+                const currentHour = now.getHours().toString().padStart(2, '0');
+                const currentMinute = now.getMinutes().toString().padStart(2, '0');
+                startTimeInput.value = `${currentHour}:${currentMinute}`;
+                
+                const endTime = new Date(now.getTime() + 8 * 60 * 60 * 1000);
+                const endHour = endTime.getHours().toString().padStart(2, '0');
+                const endMinute = endTime.getMinutes().toString().padStart(2, '0');
+                endTimeInput.value = `${endHour}:${endMinute}`;
+                
+                breakTimeInput.value = "1:00";
+                resultContainer.style.display = 'none';
+                errorMessage.style.display = 'none';
+            }
+            
+            function saveToHistory(start, end, breakTime, total) {
+                const historyItem = {
+                    id: Date.now(),
+                    date: new Date().toLocaleDateString('de-DE'),
+                    time: new Date().toLocaleTimeString('de-DE', {hour: '2-digit', minute: '2-digit'}),
+                    start: start,
+                    end: end,
+                    break: breakTime,
+                    total: total
+                };
+                
+                let history = JSON.parse(localStorage.getItem('workHoursHistory')) || [];
+                
+                // Kontrollo për duplicate
+                const isDuplicate = history.some(item => 
+                    item.start === start && 
+                    item.end === end && 
+                    item.break === breakTime && 
+                    item.total === total
+                );
+                
+                if (!isDuplicate) {
+                    history.unshift(historyItem);
+                    if (history.length > 10) history = history.slice(0, 10);
+                    localStorage.setItem('workHoursHistory', JSON.stringify(history));
+                    loadHistory();
+                }
+            }
+            
+            function loadHistory() {
+                const history = JSON.parse(localStorage.getItem('workHoursHistory')) || [];
+                if (history.length > 0) {
+                    historyList.innerHTML = '';
+                    history.forEach(item => {
+                        const historyItemElement = document.createElement('div');
+                        historyItemElement.className = 'history-item';
+                        historyItemElement.innerHTML = `
+                            <div>
+                                <div class="history-date">${item.date} ${item.time}</div>
+                                <div style="font-size: 0.9rem; color: #95a5a6;">
+                                    ${item.start} - ${item.end} (Pause: ${item.break})
+                                </div>
+                            </div>
+                            <div class="history-hours">${item.total}</div>
+                        `;
+                        historyList.appendChild(historyItemElement);
+                    });
+                    historySection.style.display = 'block';
+                } else {
+                    historySection.style.display = 'none';
+                }
+            }
+            
+            function clearHistory() {
+                if (confirm("Möchten Sie wirklich den gesamten Verlauf löschen?")) {
+                    localStorage.removeItem('workHoursHistory');
+                    loadHistory();
+                }
+            }
+            
+            // Automatische Berechnung beim Laden der Seite
+            calculateHours();
+        });
+    </script>
+</body>
+</html>
